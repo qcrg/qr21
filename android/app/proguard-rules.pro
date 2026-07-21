@@ -1,0 +1,1 @@
+-keep class com.example.device_screen_brightness.DeviceScreenBrightnessHelper { *; }

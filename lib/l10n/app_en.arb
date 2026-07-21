@@ -1,0 +1,11 @@
+{
+	"language": "English",
+	"serverNotFound": "The server is not found",
+	"incorrectServer": "The server is incorrect",
+	"botNotFound": "QR Bot not found on the server",
+	"incorrectCredentials": "Login or password is incorrect",
+	"unauthorized": "You not authorized into any accounts",
+	"qrNotGenerated": "QR-code is not genereated. Why? I don't know",
+	"loginFailed": "Failed to login",
+	"login": "Login"
+}

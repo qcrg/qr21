@@ -1,0 +1,11 @@
+{
+	"language": "Русский",
+	"serverNotFound": "Сервер не найден",
+	"incorrectServer": "Сервер не является сервером RocketChat",
+	"botNotFound": "QR-бот не был найден на сервере",
+	"incorrectCredentials": "Логин или пароль не верны",
+	"unauthorized": "Отсутствует авторизация к какому-либо серверу",
+	"qrNotGenerated": "QR-код не был сгенерирован. Почему? Понятия не имею",
+	"loginFailed": "Ошибка авторизации",
+	"login": "Авторизоваться"
+}
