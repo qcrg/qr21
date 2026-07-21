@@ -18,9 +18,7 @@ class _const {
 
 class RocketChatQrService {
   final RocketChatStorage _storage;
-  final BehaviorSubject<QrInternalServiceState> _stream_ctrl = .seeded(
-    .unready,
-  );
+  final BehaviorSubject<QrInternalServiceState> _stream_ctrl = .new();
   RocketChatClient? _client;
 
   RocketChatQrService({RocketChatStorage? storage, this._client})
