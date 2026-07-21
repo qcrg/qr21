@@ -1,0 +1,4 @@
+enum QrInternalServiceState {
+  ready,
+  unready,
+}
