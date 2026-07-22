@@ -266,16 +266,15 @@ QrData? _parse_message(String msg, String username) {
   }
 
   final ds = date_match[0]!.split('.');
-  final expires = DateTime(
+  final expires = DateTime.utc(
     int.parse(ds[2]),
     int.parse(ds[1]),
     int.parse(ds[0]),
-  ).toUtc();
+  );
   return QrData(src: qr_match.group(1)!, username: username, expires: expires);
 }
 
 DateTime _gen_now() {
   final now = DateTime.now().toUtc();
-  // return now.subtract(Duration(seconds: 20));
-  return DateTime(now.year, now.month, now.day);
+  return DateTime.utc(now.year, now.month, now.day);
 }
