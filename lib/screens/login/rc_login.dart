@@ -49,6 +49,7 @@ class RcLogin extends HookWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
+        spacing: 12,
         children: [
           FSelect(
             control: .managed(controller: select_controller),
@@ -149,7 +150,6 @@ void _submit(
       variant: .destructive,
       description: Text(_rocketchat_err_to_string(tr, err)),
     );
+    context.pop();
   }
-
-  context.pop();
 }
