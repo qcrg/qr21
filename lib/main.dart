@@ -9,6 +9,7 @@ import "package:qr21/router.dart";
 import "package:provider/provider.dart";
 import "package:hive_ce_flutter/hive_ce_flutter.dart";
 import "package:qr21/data/models/hive_adapters/hive_registrar.g.dart";
+import "package:qr21/widgets/app_creds.dart";
 
 void main() async {
   Chirp.root = ChirpLogger().addConsoleWriter(
@@ -51,7 +52,9 @@ class Qr21App extends StatelessWidget {
         return FTheme(
           data: theme,
           child: FToaster(
-            child: SafeArea(child: FScaffold(child: child!)),
+            child: SafeArea(
+              child: AppCredsWidget(child: FScaffold(child: child!)),
+            ),
           ),
         );
       },
