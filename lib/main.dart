@@ -11,6 +11,11 @@ import "package:hive_ce_flutter/hive_ce_flutter.dart";
 import "package:qr21/data/models/hive_adapters/hive_registrar.g.dart";
 import "package:qr21/widgets/app_creds.dart";
 
+Future<void> init_hive() async {
+  await Hive.initFlutter((await getApplicationSupportDirectory()).path);
+  Hive.registerAdapters();
+}
+
 void main() async {
   Chirp.root = ChirpLogger().addConsoleWriter(
     minLogLevel: kReleaseMode ? ChirpLogLevel.warning : ChirpLogLevel.debug,
@@ -18,8 +23,7 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter((await getApplicationSupportDirectory()).path);
-  Hive.registerAdapters();
+  await init_hive();
 
   runApp(
     MultiProvider(
