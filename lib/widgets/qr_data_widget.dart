@@ -42,7 +42,7 @@ class _QrDataWidgetImpl extends StatelessWidget {
             Text(
               _format_expires_date(data.expires),
               style: () {
-                if (_is_expired(data.expires)) {
+                if (data.isExpired()) {
                   return typography.body.md.copyWith(
                     color: colors.destructive,
                   );
@@ -61,10 +61,4 @@ String _format_expires_date(DateTime date) {
   final day = date.day.toString().padLeft(2, '0');
   final month = date.month.toString().padLeft(2, '0');
   return "$day.$month.${date.year}";
-}
-
-bool _is_expired(DateTime date) {
-  var now = DateTime.now();
-  now = DateTime(now.year, now.month, now.day);
-  return !now.isBefore(date);
 }

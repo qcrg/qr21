@@ -207,8 +207,8 @@ return $default(_that.username,_that.src,_that.expires);case _:
 /// @nodoc
 
 
-class _QrData implements QrData {
-  const _QrData({required this.username, required this.src, required this.expires});
+class _QrData extends QrData {
+  const _QrData({required this.username, required this.src, required this.expires}): super._();
   
 
 @override final  String username;

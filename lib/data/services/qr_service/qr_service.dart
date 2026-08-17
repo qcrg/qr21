@@ -69,10 +69,9 @@ class QrService {
 
   Future<void> _loop() async {
     log.debug("Start _loop");
-    final now_ts = DateTime.now().toUtc();
     QrData? data = (await _storage.get_data()) ?? dataStream.valueOrNull;
 
-    if (data != null && now_ts.isBefore(data.expires)) {
+    if (data != null && !data.isExpired()) {
       log.info(
         "Data is not expired - skipping _loop",
         data: {"expires": data.expires},
