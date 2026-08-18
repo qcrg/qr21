@@ -34,4 +34,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get login => 'Авторизоваться';
+
+  @override
+  String get wtfMoment => 'WTF?! Смотри логи...';
 }

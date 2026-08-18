@@ -94,18 +94,20 @@ class RcLogin extends HookWidget {
 
 String _rocketchat_err_to_string(AppLocalizations tr, RocketChatError err) {
   switch (err) {
-    case RocketChatError.serverNotFound:
+    case .serverNotFound:
       return tr.serverNotFound;
-    case RocketChatError.incorrectServer:
+    case .incorrectServer:
       return tr.incorrectServer;
-    case RocketChatError.incorrectCredentials:
+    case .incorrectCredentials:
       return tr.incorrectCredentials;
-    case RocketChatError.botNotFound:
+    case .botNotFound:
       return tr.botNotFound;
-    case RocketChatError.unauthorized:
+    case .unauthorized:
       return tr.unauthorized;
-    case RocketChatError.qrNotGenerated:
+    case .qrNotGenerated:
       return tr.qrNotGenerated;
+    case .wtfMoment:
+      return tr.wtfMoment;
   }
 }
 
