@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:provider/provider.dart';
 import 'package:qr21/data/models/qr_data/qr_data.dart';
+import 'package:qr21/l10n/app_localizations.dart';
 import 'package:qr21/providers/qr_provider.dart';
 import 'package:qr21/widgets/qr_widget.dart';
 
@@ -11,6 +12,16 @@ class QrDataWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final qrprov = Provider.of<QrProvider>(context);
+    final tr = AppLocalizations.of(context)!;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (qrprov.error != null) {
+        showFToast(
+          context: context,
+          title: Text(tr.qrNotGenerated),
+          variant: .destructive,
+        );
+      }
+    });
     return Center(
       child: qrprov.data == null
           ? FCircularProgress(size: .xl)
