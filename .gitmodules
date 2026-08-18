@@ -1,3 +1,4 @@
 [submodule "packages/rocketchat_sdk"]
 	path = packages/rocketchat_sdk
-	url = https://github.com/qcrg/rocketchat_sdk.git
+	url = https://github.com/qcrg/rocketchat_sdk
+	branch = dev
