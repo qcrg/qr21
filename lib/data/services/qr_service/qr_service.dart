@@ -25,8 +25,7 @@ class QrService {
   final QrStorage _storage;
   Timer? _timer;
 
-  QrService({QrStorage? storage, Timer? timer})
-    : _storage = storage ?? QrStorage() {
+  QrService({QrStorage? storage}) : _storage = storage ?? QrStorage() {
     _rc_sub = rocketchat.stateStream.listen(_on_internal_srv_state_change);
     _init_async();
   }
