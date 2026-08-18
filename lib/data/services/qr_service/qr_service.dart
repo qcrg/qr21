@@ -27,7 +27,7 @@ class QrService {
 
   QrService({QrStorage? storage}) : _storage = storage ?? QrStorage() {
     _rc_sub = rocketchat.stateStream.listen(_on_internal_srv_state_change);
-    _init_async();
+    _ctor_async();
   }
 
   Future<bool> is_authorized() async => rocketchat.is_authorized();
@@ -42,7 +42,7 @@ class QrService {
 
   ValueStream<QrData> get dataStream => _streamCtrl.stream;
 
-  Future<void> _init_async() async {
+  Future<void> _ctor_async() async {
     log.info("Initializing QR Service...");
     final QrData? data = await _storage.get_data();
 
