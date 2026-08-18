@@ -8,4 +8,4 @@ build_runner:
 cp: build
 	cp build/app/outputs/flutter-apk/app-release.apk ~/qr21-$(shell yaml2json pubspec.yaml | jq .version -r).apk
 
-.PHONY: build build_runner
+.PHONY: cp build build_runner
