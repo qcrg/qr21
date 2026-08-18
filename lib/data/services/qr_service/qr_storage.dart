@@ -1,8 +1,5 @@
-import 'package:chirp/chirp.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import 'package:qr21/data/models/qr_data/qr_data.dart';
-
-final log = Chirp.root.addContext({"tag": "STORAGE:QR"});
 
 // ignore: camel_case_types
 class _const {
