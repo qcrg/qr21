@@ -148,6 +148,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Login'**
   String get login;
+
+  /// No description provided for @wtfMoment.
+  ///
+  /// In en, this message translates to:
+  /// **'WTF?! See logs...'**
+  String get wtfMoment;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

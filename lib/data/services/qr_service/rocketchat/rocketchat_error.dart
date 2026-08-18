@@ -6,7 +6,8 @@ enum RocketChatError {
   incorrectCredentials,
   botNotFound,
   unauthorized,
-  qrNotGenerated;
+  qrNotGenerated,
+  wtfMoment;
 
   QrServiceError toQrServiceError() {
     switch (this) {
