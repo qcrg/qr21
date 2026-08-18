@@ -9,6 +9,5 @@ abstract class RocketChatCreds with _$RocketChatCreds {
     required String username,
     required String userId,
     required String authToken,
-    required String botRoomId,
   }) = _RocketChatCreds;
 }
