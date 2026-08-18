@@ -8,6 +8,7 @@ import 'package:qr21/data/services/qr_service/rocketchat/rocketchat_storage.dart
 import 'package:rocketchat_sdk/rocketchat_sdk.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:dio/dio.dart';
 
 final log = Chirp.root.addContext({"tag": "SERV:RC"});
 
@@ -40,7 +41,7 @@ class RocketChatQrService {
   }) async {
     RocketChatError? err;
 
-    final client = RocketChatClient(baseUrl: baseUrl);
+    final client = RocketChatClient(baseUrl: baseUrl, dio: _make_dio());
 
     err = await _is_server_valid(client);
     if (err != null) {
@@ -88,6 +89,10 @@ class RocketChatQrService {
     return _retrive_external_data();
   }
 
+  Future<void> close() async {
+    await _stream_ctrl.close();
+  }
+
   Future<void> _try_init_authorized_rc_client() async {
     if (!await is_authorized()) {
       log.info("Client not authorized");
@@ -98,13 +103,10 @@ class RocketChatQrService {
       baseUrl: creds.baseUrl,
       userId: creds.userId,
       authToken: creds.authToken,
+      dio: _make_dio(),
     );
     log.info("Authorized as '${creds.username}' user");
     _stream_ctrl.add(.ready);
-  }
-
-  Future<void> close() async {
-    await _stream_ctrl.close();
   }
 
   Future<RocketChatError?> _is_server_valid(RocketChatClient client) async {
@@ -120,6 +122,9 @@ class RocketChatQrService {
       switch (e.type) {
         case .notFound:
           return .incorrectServer;
+
+        case .forbidden:
+          return .wtfMoment;
 
         default:
           rethrow;
@@ -137,26 +142,23 @@ class RocketChatQrService {
     final creds = (await _storage.get_creds())!;
     final DateTime execute_ts = _gen_now();
 
-    try {
-      await _client!.misc.commands.run(
-        command: "enter",
-        roomId: creds.botRoomId,
-      );
-      log.info("Command '/enter' executed");
-    } on RocketChatException catch (e) {
-      switch (e.type) {
-        case .unauthorized:
-          await _storage.clear_creds();
-          return Failure(.unauthorized);
-        default:
-          rethrow;
-      }
+    final bot_room_id_res = await _get_bot_room_id(_client!);
+    if (bot_room_id_res.isFailure) {
+      return Failure(bot_room_id_res.getFailureOrNull()!);
+    }
+    final bot_room_id = bot_room_id_res.getOrNull()!;
+
+    await Future.delayed(Duration(milliseconds: 200));
+
+    final qr_gen_err = await _gen_qr(_client!, bot_room_id);
+    if (qr_gen_err != null) {
+      return Failure(.qrNotGenerated);
     }
 
     for (int i = 0; i < 10; i++) {
       log.debug("Retriving QR data attempt: $i");
       final msgs = (await _client!.dm.messages(
-        roomId: creds.botRoomId,
+        roomId: bot_room_id,
         count: 2,
       ));
       final RocketChatMessage msg = _is_rate_limit_message(msgs.first.msg)
@@ -178,6 +180,38 @@ class RocketChatQrService {
     log.error("QR data is not retrived - attempts exhausted");
     return Failure(.qrNotGenerated);
   }
+}
+
+Future<RocketChatError?> _gen_qr(
+  RocketChatClient client,
+  String bot_room_id,
+) async {
+  const MAX_ATTEMPTS = 100;
+  for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    try {
+      log.info("Generating QR-code... Attempt: '$attempt']");
+      await client.misc.commands.run(
+        command: "enter",
+        roomId: bot_room_id,
+      );
+      log.info("QR-code is generated");
+
+      return null;
+    } on RocketChatException catch (e) {
+      switch (e.type) {
+        case .unauthorized:
+          return .unauthorized;
+
+        case .badRequest:
+          await Future.delayed(Duration(milliseconds: 100));
+          continue;
+
+        default:
+          rethrow;
+      }
+    }
+  }
+  return .wtfMoment;
 }
 
 Future<RocketChatError?> _authorize(
@@ -219,7 +253,6 @@ Future<RocketChatError?> _authorize(
       username: username,
       authToken: client.authToken,
       userId: client.userId,
-      botRoomId: room_id.getOrNull()!,
     ),
   );
   log.info("Authorization is successfull for '$username'");
@@ -231,7 +264,7 @@ Future<Result<RocketChatError, String>> _get_bot_room_id(
 ) async {
   try {
     final room = await client.dm.create(username: _const.botUsername);
-    log.info("Bot is found");
+    log.info("Bot is found '${room.id}'");
     return Success(room.id);
   } on RocketChatException catch (e) {
     if (e.type == .notFound) {
@@ -277,4 +310,17 @@ QrData? _parse_message(String msg, String username) {
 DateTime _gen_now() {
   final now = DateTime.now().toUtc();
   return DateTime.utc(now.year, now.month, now.day);
+}
+
+Dio _make_dio() {
+  final dio = Dio(BaseOptions());
+  return dio;
+  dio.interceptors.add(
+    LogInterceptor(
+      requestBody: true,
+      responseBody: true,
+      requestHeader: true,
+    ),
+  );
+  return dio;
 }
