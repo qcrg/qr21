@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RocketChatCreds {
 
- String get baseUrl; String get username; String get userId; String get authToken; String get botRoomId;
+ String get baseUrl; String get username; String get userId; String get authToken;
 /// Create a copy of RocketChatCreds
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $RocketChatCredsCopyWith<RocketChatCreds> get copyWith => _$RocketChatCredsCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RocketChatCreds&&(identical(other.baseUrl, baseUrl) || other.baseUrl == baseUrl)&&(identical(other.username, username) || other.username == username)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.authToken, authToken) || other.authToken == authToken)&&(identical(other.botRoomId, botRoomId) || other.botRoomId == botRoomId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RocketChatCreds&&(identical(other.baseUrl, baseUrl) || other.baseUrl == baseUrl)&&(identical(other.username, username) || other.username == username)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.authToken, authToken) || other.authToken == authToken));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,baseUrl,username,userId,authToken,botRoomId);
+int get hashCode => Object.hash(runtimeType,baseUrl,username,userId,authToken);
 
 @override
 String toString() {
-  return 'RocketChatCreds(baseUrl: $baseUrl, username: $username, userId: $userId, authToken: $authToken, botRoomId: $botRoomId)';
+  return 'RocketChatCreds(baseUrl: $baseUrl, username: $username, userId: $userId, authToken: $authToken)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $RocketChatCredsCopyWith<$Res>  {
   factory $RocketChatCredsCopyWith(RocketChatCreds value, $Res Function(RocketChatCreds) _then) = _$RocketChatCredsCopyWithImpl;
 @useResult
 $Res call({
- String baseUrl, String username, String userId, String authToken, String botRoomId
+ String baseUrl, String username, String userId, String authToken
 });
 
 
@@ -62,13 +62,12 @@ class _$RocketChatCredsCopyWithImpl<$Res>
 
 /// Create a copy of RocketChatCreds
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? baseUrl = null,Object? username = null,Object? userId = null,Object? authToken = null,Object? botRoomId = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? baseUrl = null,Object? username = null,Object? userId = null,Object? authToken = null,}) {
   return _then(_self.copyWith(
 baseUrl: null == baseUrl ? _self.baseUrl : baseUrl // ignore: cast_nullable_to_non_nullable
 as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,authToken: null == authToken ? _self.authToken : authToken // ignore: cast_nullable_to_non_nullable
-as String,botRoomId: null == botRoomId ? _self.botRoomId : botRoomId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -154,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String baseUrl,  String username,  String userId,  String authToken,  String botRoomId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String baseUrl,  String username,  String userId,  String authToken)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RocketChatCreds() when $default != null:
-return $default(_that.baseUrl,_that.username,_that.userId,_that.authToken,_that.botRoomId);case _:
+return $default(_that.baseUrl,_that.username,_that.userId,_that.authToken);case _:
   return orElse();
 
 }
@@ -175,10 +174,10 @@ return $default(_that.baseUrl,_that.username,_that.userId,_that.authToken,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String baseUrl,  String username,  String userId,  String authToken,  String botRoomId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String baseUrl,  String username,  String userId,  String authToken)  $default,) {final _that = this;
 switch (_that) {
 case _RocketChatCreds():
-return $default(_that.baseUrl,_that.username,_that.userId,_that.authToken,_that.botRoomId);case _:
+return $default(_that.baseUrl,_that.username,_that.userId,_that.authToken);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +194,10 @@ return $default(_that.baseUrl,_that.username,_that.userId,_that.authToken,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String baseUrl,  String username,  String userId,  String authToken,  String botRoomId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String baseUrl,  String username,  String userId,  String authToken)?  $default,) {final _that = this;
 switch (_that) {
 case _RocketChatCreds() when $default != null:
-return $default(_that.baseUrl,_that.username,_that.userId,_that.authToken,_that.botRoomId);case _:
+return $default(_that.baseUrl,_that.username,_that.userId,_that.authToken);case _:
   return null;
 
 }
@@ -210,14 +209,13 @@ return $default(_that.baseUrl,_that.username,_that.userId,_that.authToken,_that.
 
 
 class _RocketChatCreds implements RocketChatCreds {
-  const _RocketChatCreds({required this.baseUrl, required this.username, required this.userId, required this.authToken, required this.botRoomId});
+  const _RocketChatCreds({required this.baseUrl, required this.username, required this.userId, required this.authToken});
   
 
 @override final  String baseUrl;
 @override final  String username;
 @override final  String userId;
 @override final  String authToken;
-@override final  String botRoomId;
 
 /// Create a copy of RocketChatCreds
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +227,16 @@ _$RocketChatCredsCopyWith<_RocketChatCreds> get copyWith => __$RocketChatCredsCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RocketChatCreds&&(identical(other.baseUrl, baseUrl) || other.baseUrl == baseUrl)&&(identical(other.username, username) || other.username == username)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.authToken, authToken) || other.authToken == authToken)&&(identical(other.botRoomId, botRoomId) || other.botRoomId == botRoomId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RocketChatCreds&&(identical(other.baseUrl, baseUrl) || other.baseUrl == baseUrl)&&(identical(other.username, username) || other.username == username)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.authToken, authToken) || other.authToken == authToken));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,baseUrl,username,userId,authToken,botRoomId);
+int get hashCode => Object.hash(runtimeType,baseUrl,username,userId,authToken);
 
 @override
 String toString() {
-  return 'RocketChatCreds(baseUrl: $baseUrl, username: $username, userId: $userId, authToken: $authToken, botRoomId: $botRoomId)';
+  return 'RocketChatCreds(baseUrl: $baseUrl, username: $username, userId: $userId, authToken: $authToken)';
 }
 
 
@@ -249,7 +247,7 @@ abstract mixin class _$RocketChatCredsCopyWith<$Res> implements $RocketChatCreds
   factory _$RocketChatCredsCopyWith(_RocketChatCreds value, $Res Function(_RocketChatCreds) _then) = __$RocketChatCredsCopyWithImpl;
 @override @useResult
 $Res call({
- String baseUrl, String username, String userId, String authToken, String botRoomId
+ String baseUrl, String username, String userId, String authToken
 });
 
 
@@ -266,13 +264,12 @@ class __$RocketChatCredsCopyWithImpl<$Res>
 
 /// Create a copy of RocketChatCreds
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? baseUrl = null,Object? username = null,Object? userId = null,Object? authToken = null,Object? botRoomId = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? baseUrl = null,Object? username = null,Object? userId = null,Object? authToken = null,}) {
   return _then(_RocketChatCreds(
 baseUrl: null == baseUrl ? _self.baseUrl : baseUrl // ignore: cast_nullable_to_non_nullable
 as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,authToken: null == authToken ? _self.authToken : authToken // ignore: cast_nullable_to_non_nullable
-as String,botRoomId: null == botRoomId ? _self.botRoomId : botRoomId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

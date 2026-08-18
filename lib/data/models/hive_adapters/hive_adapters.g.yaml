@@ -25,5 +25,3 @@ types:
         index: 2
       authToken:
         index: 3
-      botRoomId:
-        index: 4

@@ -61,14 +61,13 @@ class RocketChatCredsAdapter extends TypeAdapter<RocketChatCreds> {
       username: fields[1] as String,
       userId: fields[2] as String,
       authToken: fields[3] as String,
-      botRoomId: fields[4] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, RocketChatCreds obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.baseUrl)
       ..writeByte(1)
@@ -76,9 +75,7 @@ class RocketChatCredsAdapter extends TypeAdapter<RocketChatCreds> {
       ..writeByte(2)
       ..write(obj.userId)
       ..writeByte(3)
-      ..write(obj.authToken)
-      ..writeByte(4)
-      ..write(obj.botRoomId);
+      ..write(obj.authToken);
   }
 
   @override
