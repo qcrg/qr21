@@ -57,10 +57,10 @@ class RocketChatCredsAdapter extends TypeAdapter<RocketChatCreds> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return RocketChatCreds(
-      baseUrl: fields[0] as String,
-      username: fields[1] as String,
-      userId: fields[2] as String,
-      authToken: fields[3] as String,
+      baseUrl: fields[5] as String,
+      username: fields[6] as String,
+      userId: fields[7] as String,
+      authToken: fields[8] as String,
     );
   }
 
@@ -68,13 +68,13 @@ class RocketChatCredsAdapter extends TypeAdapter<RocketChatCreds> {
   void write(BinaryWriter writer, RocketChatCreds obj) {
     writer
       ..writeByte(4)
-      ..writeByte(0)
+      ..writeByte(5)
       ..write(obj.baseUrl)
-      ..writeByte(1)
+      ..writeByte(6)
       ..write(obj.username)
-      ..writeByte(2)
+      ..writeByte(7)
       ..write(obj.userId)
-      ..writeByte(3)
+      ..writeByte(8)
       ..write(obj.authToken);
   }
 

@@ -15,13 +15,13 @@ types:
         index: 6
   RocketChatCreds:
     typeId: 1
-    nextIndex: 5
+    nextIndex: 9
     fields:
       baseUrl:
-        index: 0
+        index: 5
       username:
-        index: 1
+        index: 6
       userId:
-        index: 2
+        index: 7
       authToken:
-        index: 3
+        index: 8

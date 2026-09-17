@@ -208,8 +208,8 @@ return $default(_that.baseUrl,_that.username,_that.userId,_that.authToken);case 
 /// @nodoc
 
 
-class _RocketChatCreds implements RocketChatCreds {
-  const _RocketChatCreds({required this.baseUrl, required this.username, required this.userId, required this.authToken});
+class _RocketChatCreds extends RocketChatCreds {
+  const _RocketChatCreds({required this.baseUrl, required this.username, required this.userId, required this.authToken}): super._();
   
 
 @override final  String baseUrl;
