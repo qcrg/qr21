@@ -8,7 +8,6 @@ import 'package:qr21/data/services/qr_service/rocketchat/rocketchat_storage.dart
 import 'package:rocketchat_sdk/rocketchat_sdk.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:dio/dio.dart';
 
 final log = Chirp.root.addContext({"tag": "SERV:RC"});
 
@@ -41,7 +40,7 @@ class RocketChatQrService {
   }) async {
     RocketChatError? err;
 
-    final client = RocketChatClient(baseUrl: baseUrl, dio: _make_dio());
+    final client = RocketChatClient(baseUrl: baseUrl);
 
     err = await _is_server_valid(client);
     if (err != null) {
@@ -103,7 +102,6 @@ class RocketChatQrService {
       baseUrl: creds.baseUrl,
       userId: creds.userId,
       authToken: creds.authToken,
-      dio: _make_dio(),
     );
     log.info("Authorized as '${creds.username}' user");
     _stream_ctrl.add(.ready);
@@ -310,17 +308,4 @@ QrData? _parse_message(String msg, String username) {
 DateTime _gen_now() {
   final now = DateTime.now().toUtc();
   return DateTime.utc(now.year, now.month, now.day);
-}
-
-Dio _make_dio() {
-  final dio = Dio(BaseOptions());
-  return dio;
-  dio.interceptors.add(
-    LogInterceptor(
-      requestBody: true,
-      responseBody: true,
-      requestHeader: true,
-    ),
-  );
-  return dio;
 }
