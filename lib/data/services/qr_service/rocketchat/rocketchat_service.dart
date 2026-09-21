@@ -3,17 +3,20 @@ import 'package:light_result/light_result.dart';
 import 'package:qr21/data/models/qr_data/qr_data.dart';
 import 'package:qr21/data/models/rocketchat_creds/rocketchat_creds.dart';
 import 'package:qr21/data/services/qr_service/qr_internal_sevice_state.dart';
+import 'package:qr21/data/services/qr_service/rocketchat/qr_extractor/extract_context.dart';
 import 'package:qr21/data/services/qr_service/rocketchat/rocketchat_error.dart';
+import 'package:qr21/data/services/qr_service/rocketchat/qr_extractor/qr_extractor.dart';
 import 'package:qr21/data/services/qr_service/rocketchat/rocketchat_storage.dart';
 import 'package:rocketchat_sdk/rocketchat_sdk.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/subjects.dart';
 
-final log = Chirp.root.addContext({"tag": "SERV:RC"});
+final _log = Chirp.root.addContext({"tag": "SERV:RC"});
 
 // ignore: camel_case_types
 class _const {
   static const String botUsername = "qr-code-generator.bot";
+  static const int max_attempts_for_gen_qr = 30;
 }
 
 class RocketChatQrService {
@@ -23,7 +26,7 @@ class RocketChatQrService {
 
   RocketChatQrService({RocketChatStorage? storage, this._client})
     : _storage = storage ?? RocketChatStorage() {
-    log.info("Create RocketChatQrService");
+    _log.info("Create RocketChatQrService");
     _try_init_authorized_rc_client();
   }
 
@@ -59,15 +62,15 @@ class RocketChatQrService {
 
   Future<RocketChatError?> logout() async {
     try {
-      log.info("Logout...");
+      _log.info("Logout...");
       await _client?.auth.logout();
 
       await _storage.clear_creds();
       _stream_ctrl.add(.unready);
-      log.info("Logout successfull");
+      _log.info("Logout successfull");
       return null;
     } on RocketChatException catch (e) {
-      log.error("Failed to logout", data: {"error": e.type});
+      _log.error("Failed to logout", data: {"error": e.type});
       switch (e.type) {
         case .unauthorized:
           return .unauthorized;
@@ -80,10 +83,10 @@ class RocketChatQrService {
 
   Future<Result<RocketChatError, QrData>> get_data() async {
     if (_client == null || !(await _storage.has_creds())) {
-      log.critical("Client is uninitialized");
+      _log.critical("Client is uninitialized");
       return Failure(.unauthorized);
     }
-    log.debug("Getting data from external...");
+    _log.debug("Getting data from external...");
 
     return _retrive_external_data();
   }
@@ -94,7 +97,7 @@ class RocketChatQrService {
 
   Future<void> _try_init_authorized_rc_client() async {
     if (!await is_authorized()) {
-      log.info("Client not authorized");
+      _log.info("Client not authorized");
       return;
     }
     final creds = (await _storage.get_creds())!;
@@ -103,17 +106,17 @@ class RocketChatQrService {
       userId: creds.userId,
       authToken: creds.authToken,
     );
-    log.info("Authorized as '${creds.username}' user");
+    _log.info("Authorized as '${creds.username}' user");
     _stream_ctrl.add(.ready);
   }
 
   Future<RocketChatError?> _is_server_valid(RocketChatClient client) async {
     try {
       await client.misc.info();
-      log.info("Server is valid", data: {"baseUrl": client.baseUrl});
+      _log.info("Server is valid", data: {"baseUrl": client.baseUrl});
       return null;
     } on RocketChatException catch (e) {
-      log.error(
+      _log.error(
         "Server is invalid",
         data: {"baseUrl": client.baseUrl, "error": e.type},
       );
@@ -128,7 +131,7 @@ class RocketChatQrService {
           rethrow;
       }
     } catch (e) {
-      log.critical(
+      _log.critical(
         "Server is invalid",
         data: {"baseUrl": client.baseUrl, "exception": e},
       );
@@ -148,34 +151,35 @@ class RocketChatQrService {
 
     await Future.delayed(Duration(milliseconds: 200));
 
+    final QrData? qr_data = await _extract_qr_from_messages(
+      client: _client!,
+      bot_room_id: bot_room_id,
+      execute_ts: execute_ts,
+      username: creds.username,
+    );
+    if (qr_data != null) {
+      return Success(qr_data);
+    }
+
     final qr_gen_err = await _gen_qr(_client!, bot_room_id);
     if (qr_gen_err != null) {
       return Failure(.qrNotGenerated);
     }
 
     for (int i = 0; i < 10; i++) {
-      log.debug("Retriving QR data attempt: $i");
-      final msgs = (await _client!.dm.messages(
-        roomId: bot_room_id,
-        count: 2,
-      ));
-      final RocketChatMessage msg = _is_rate_limit_message(msgs.first.msg)
-          ? msgs[1]
-          : msgs[0];
-      final msg_ts = DateTime.parse(msg.ts).toUtc();
-      if (!msg_ts.isBefore(execute_ts) && !_is_generating_message(msg.msg)) {
-        final QrData? data = _parse_message(msg.msg, creds.username);
-        if (data != null) {
-          log.info(
-            "QR data is retrived",
-            data: {"msg_ts": msg_ts, "expires": data.expires},
-          );
-          return Success(data);
-        }
+      _log.debug("Retriving QR data attempt: $i");
+      final QrData? qr_data = await _extract_qr_from_messages(
+        client: _client!,
+        bot_room_id: bot_room_id,
+        execute_ts: execute_ts,
+        username: creds.username,
+      );
+      if (qr_data != null) {
+        return Success(qr_data);
       }
       await Future.delayed(Duration(seconds: 1));
     }
-    log.error("QR data is not retrived - attempts exhausted");
+    _log.error("QR data is not retrived - attempts exhausted");
     return Failure(.qrNotGenerated);
   }
 }
@@ -184,15 +188,14 @@ Future<RocketChatError?> _gen_qr(
   RocketChatClient client,
   String bot_room_id,
 ) async {
-  const MAX_ATTEMPTS = 100;
-  for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+  for (int attempt = 0; attempt < _const.max_attempts_for_gen_qr; attempt++) {
     try {
-      log.info("Generating QR-code... Attempt: '$attempt']");
+      _log.info("Generating QR-code... Attempt: '$attempt']");
       await client.misc.commands.run(
         command: "enter",
         roomId: bot_room_id,
       );
-      log.info("QR-code is generated");
+      _log.info("QR-code is generated");
 
       return null;
     } on RocketChatException catch (e) {
@@ -219,11 +222,11 @@ Future<RocketChatError?> _authorize(
   RocketChatStorage storage,
 ) async {
   try {
-    log.info("RC:API Login '$username' user...");
+    _log.info("RC:API Login '$username' user...");
     await client.auth.login(username: username, password: password);
-    log.info("RC:API User '$username' is authorized");
+    _log.info("RC:API User '$username' is authorized");
   } on RocketChatException catch (e) {
-    log.error("RC:API Failed to login", data: {"error": e.type});
+    _log.error("RC:API Failed to login", data: {"error": e.type});
     switch (e.type) {
       case RocketChatErrorType.notFound:
         return .incorrectServer;
@@ -238,7 +241,7 @@ Future<RocketChatError?> _authorize(
 
   final room_id = await _get_bot_room_id(client);
   if (room_id.isFailure) {
-    log.error(
+    _log.error(
       "Bot not found",
       data: {"baseUrl": client.baseUrl, "error": room_id.getFailureOrNull()},
     );
@@ -253,7 +256,7 @@ Future<RocketChatError?> _authorize(
       userId: client.userId,
     ),
   );
-  log.info("Authorization is successfull for '$username'");
+  _log.info("Authorization is successfull for '$username'");
   return null;
 }
 
@@ -262,50 +265,70 @@ Future<Result<RocketChatError, String>> _get_bot_room_id(
 ) async {
   try {
     final room = await client.dm.create(username: _const.botUsername);
-    log.info("Bot is found '${room.id}'");
+    _log.info("Bot is found '${room.id}'");
     return Success(room.id);
   } on RocketChatException catch (e) {
     if (e.type == .notFound) {
-      log.error("Bot not found");
+      _log.error("Bot not found");
       return Failure(.botNotFound);
     }
     rethrow;
   }
 }
 
-final _date_pattern = RegExp(r'[0-3][0-9]\.[0-1][0-9]\.[0-9]{4}');
-final _qr_pattern = RegExp(r'\[QR code\]\((.+)\)');
-final _rate_limit_patter = RegExp(
-  r'Please wait [0-9]{1,3} seconds before calling the command again\.',
-);
-final _generate_pattern = RegExp(r'Generating QR code...');
-
-bool _is_rate_limit_message(String msg) {
-  return _rate_limit_patter.hasMatch(msg);
-}
-
-bool _is_generating_message(String msg) {
-  return _generate_pattern.hasMatch(msg);
-}
-
-QrData? _parse_message(String msg, String username) {
-  final date_match = _date_pattern.firstMatch(msg);
-  final qr_match = _qr_pattern.firstMatch(msg);
-
-  if (date_match == null || qr_match == null || qr_match.group(1) == null) {
-    return null;
-  }
-
-  final ds = date_match[0]!.split('.');
-  final expires = DateTime.utc(
-    int.parse(ds[2]),
-    int.parse(ds[1]),
-    int.parse(ds[0]),
-  );
-  return QrData(src: qr_match.group(1)!, username: username, expires: expires);
-}
-
 DateTime _gen_now() {
   final now = DateTime.now().toUtc();
   return DateTime.utc(now.year, now.month, now.day);
+}
+
+enum _ParseMessageError {
+  qrNotFound,
+  expired,
+}
+
+Future<Result<_ParseMessageError, QrData>> _parse_messages({
+  required List<RocketChatMessage> messages,
+  required DateTime execute_ts,
+  required String username,
+  required RocketChatClient client,
+}) async {
+  QrExtractor qr_extractor = .new();
+  final QrData? qr = await qr_extractor.extract(
+    messages,
+    ExtractContext(attachment_getter: .new(client: client)),
+  );
+  if (qr == null) {
+    return Failure(.qrNotFound);
+  }
+  if (qr.isExpired()) {
+    return Failure(.expired);
+  }
+  if (qr.username.isNotEmpty) {
+    _log.wtf("The Username for extracted qr is filled");
+  }
+  return Success(qr.copyWith(username: username));
+}
+
+Future<QrData?> _extract_qr_from_messages({
+  required RocketChatClient client,
+  required String bot_room_id,
+  required DateTime execute_ts,
+  required String username,
+}) async {
+  final msgs = (await client.dm.messages(
+    roomId: bot_room_id,
+    count: 10,
+  ));
+  final result = await _parse_messages(
+    messages: msgs,
+    execute_ts: execute_ts,
+    username: username,
+    client: client,
+  );
+  switch (result) {
+    case Success(value: final qr):
+      return qr;
+    case Failure(value: final _):
+      return null;
+  }
 }
