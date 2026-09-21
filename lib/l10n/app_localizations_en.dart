@@ -37,4 +37,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wtfMoment => 'WTF?! See logs...';
+
+  @override
+  String signin_with(String service) {
+    return 'Sign in with $service';
+  }
 }

@@ -51,6 +51,14 @@ class RcLogin extends HookWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         spacing: 12,
         children: [
+          FHeader(
+            title: Text(
+              tr.signin_with("RocketChat"),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: .center,
+            ),
+          ),
           FSelect(
             control: .managed(controller: select_controller),
             formFieldKey: base_url_key,
@@ -65,12 +73,16 @@ class RcLogin extends HookWidget {
             label: const Text("Base URL"),
           ),
           FTextFormField(
-            control: .managed(initial: TextEditingValue(text: _const.username)),
+            control: .managed(
+              initial: TextEditingValue(text: _const.username),
+            ),
             formFieldKey: username_key,
             label: const Text("Username"),
           ),
           FTextFormField.password(
-            control: .managed(initial: TextEditingValue(text: _const.password)),
+            control: .managed(
+              initial: TextEditingValue(text: _const.password),
+            ),
             formFieldKey: password_key,
             label: const Text("Passsword"),
           ),

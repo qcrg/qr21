@@ -8,5 +8,11 @@
 	"qrNotGenerated": "QR-code is not genereated. Why? I don't know",
 	"loginFailed": "Failed to login",
 	"login": "Login",
-	"wtfMoment": "WTF?! See logs..."
+	"wtfMoment": "WTF?! See logs...",
+	"signin_with": "Sign in with {service}",
+	"@signin_with": {
+		"placeholders": {
+			"service": { "type": "String" }
+		}
+	}
 }

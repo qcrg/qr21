@@ -8,5 +8,11 @@
 	"qrNotGenerated": "QR-код не был сгенерирован. Почему? Понятия не имею",
 	"loginFailed": "Ошибка авторизации",
 	"login": "Авторизоваться",
-	"wtfMoment": "WTF?! Смотри логи..."
+	"wtfMoment": "WTF?! Смотри логи...",
+	"signin_with": "Авторизоваться через {service}",
+	"@signin_with": {
+		"placeholders": {
+			"service": { "type": "String" }
+		}
+	}
 }

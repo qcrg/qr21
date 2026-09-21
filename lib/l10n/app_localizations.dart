@@ -154,6 +154,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'WTF?! See logs...'**
   String get wtfMoment;
+
+  /// No description provided for @signin_with.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with {service}'**
+  String signin_with(String service);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
