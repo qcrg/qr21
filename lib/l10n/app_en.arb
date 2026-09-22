@@ -14,5 +14,12 @@
 		"placeholders": {
 			"service": { "type": "String" }
 		}
+	},
+	"new_version": "New version",
+	"new_app_version_released": "A new version has been released {version}",
+	"@new_app_version_released": {
+		"placeholders": {
+			"version": { "type": "String" }
+		}
 	}
 }

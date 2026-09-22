@@ -3,13 +3,17 @@ import "package:flutter/foundation.dart" show kReleaseMode;
 import "package:flutter/material.dart";
 import "package:forui/forui.dart";
 import "package:path_provider/path_provider.dart";
+import "package:qr21/data/app_info.dart";
+import "package:qr21/data/services/version_service/version_service.dart";
 import "package:qr21/l10n/app_localizations.dart";
+import "package:qr21/providers/app_storage_provider.dart";
 import "package:qr21/providers/qr_provider.dart";
 import "package:qr21/router.dart";
 import "package:provider/provider.dart";
 import "package:hive_ce_flutter/hive_ce_flutter.dart";
 import "package:qr21/data/models/hive_adapters/hive_registrar.g.dart";
 import "package:qr21/widgets/app_creds.dart";
+import "package:qr21/widgets/version_notifier.dart";
 
 Future<void> init_hive() async {
   await Hive.initFlutter((await getApplicationSupportDirectory()).path);
@@ -25,11 +29,19 @@ void main() async {
 
   await init_hive();
 
+  final app_storage_provider = await AppStorageProvider.make();
+
+  final VersionService _ = .new(app_storage_provider: app_storage_provider);
+
   runApp(
     MultiProvider(
       providers: [
         Provider<Qr21RouteObserver>(create: (_) => .new()),
         ChangeNotifierProvider<QrProvider>(create: (_) => .new()),
+        Provider<AppInfo>.value(value: await AppInfo.make()),
+        ChangeNotifierProvider<AppStorageProvider>.value(
+          value: app_storage_provider,
+        ),
       ],
       child: const Qr21App(),
     ),
@@ -57,7 +69,11 @@ class Qr21App extends StatelessWidget {
           data: theme,
           child: FToaster(
             child: SafeArea(
-              child: AppCredsWidget(child: FScaffold(child: child!)),
+              child: VersionNotifierWidget(
+                child: AppCredsWidget(
+                  child: FScaffold(child: child!),
+                ),
+              ),
             ),
           ),
         );

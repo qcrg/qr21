@@ -160,6 +160,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign in with {service}'**
   String signin_with(String service);
+
+  /// No description provided for @new_version.
+  ///
+  /// In en, this message translates to:
+  /// **'New version'**
+  String get new_version;
+
+  /// No description provided for @new_app_version_released.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version has been released {version}'**
+  String new_app_version_released(String version);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

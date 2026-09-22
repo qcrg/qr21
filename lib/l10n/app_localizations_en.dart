@@ -42,4 +42,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String signin_with(String service) {
     return 'Sign in with $service';
   }
+
+  @override
+  String get new_version => 'New version';
+
+  @override
+  String new_app_version_released(String version) {
+    return 'A new version has been released $version';
+  }
 }

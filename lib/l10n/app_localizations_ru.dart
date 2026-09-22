@@ -42,4 +42,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String signin_with(String service) {
     return 'Авторизоваться через $service';
   }
+
+  @override
+  String get new_version => 'Новая версия';
+
+  @override
+  String new_app_version_released(String version) {
+    return 'Вышла новая версия приложения $version';
+  }
 }
